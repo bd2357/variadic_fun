@@ -211,3 +211,72 @@ void test_mutate_1_field(void)
     TEST_ASSERT_EQUAL_HEX(0xfffffffC, Mutate_Fields(val, (TF1,0) ) );
     TEST_ASSERT_EQUAL_HEX(0xffffffff, Mutate_Fields(val, (TF1,3) ) );
 }
+
+
+
+/*
+Verify it genrates the assemble we expect
+Dump of assembler code for function mutate_with_vars:
+218     {
+   0x0000000000401e42 <+0>:     push   %rbp
+   0x0000000000401e43 <+1>:     mov    %rsp,%rbp
+   0x0000000000401e46 <+4>:     mov    %ecx,0x10(%rbp)
+   0x0000000000401e49 <+7>:     mov    %edx,0x18(%rbp)
+   0x0000000000401e4c <+10>:    mov    %r8d,0x20(%rbp)
+   0x0000000000401e50 <+14>:    mov    %r9d,%eax
+   0x0000000000401e53 <+17>:    mov    %al,0x28(%rbp)
+
+219
+220         return Mutate_Fields(start_val,
+=> 0x0000000000401e56 <+20>:    mov    0x41b4(%rip),%eax        # 0x406010 <start_val>
+   0x0000000000401e5c <+26>:    and    $0xc0000000,%eax
+   0x0000000000401e61 <+31>:    mov    %eax,%edx
+   0x0000000000401e63 <+33>:    mov    0x10(%rbp),%eax
+   0x0000000000401e66 <+36>:    and    $0x3,%eax
+   0x0000000000401e69 <+39>:    mov    %eax,%ecx
+   0x0000000000401e6b <+41>:    mov    0x18(%rbp),%eax
+   0x0000000000401e6e <+44>:    shl    $0xa,%eax
+   0x0000000000401e71 <+47>:    and    $0xc00,%eax
+   0x0000000000401e76 <+52>:    or     %eax,%ecx
+   0x0000000000401e78 <+54>:    mov    0x20(%rbp),%eax
+   0x0000000000401e7b <+57>:    shl    $0xc,%eax
+   0x0000000000401e7e <+60>:    and    $0x3000,%eax
+   0x0000000000401e83 <+65>:    or     %eax,%ecx
+   0x0000000000401e85 <+67>:    movzbl 0x28(%rbp),%eax
+   0x0000000000401e89 <+71>:    shl    $0x16,%eax
+   0x0000000000401e8c <+74>:    and    $0xc00000,%eax
+   0x0000000000401e91 <+79>:    or     %ecx,%eax
+   0x0000000000401e93 <+81>:    or     %edx,%eax
+   0x0000000000401e95 <+83>:    or     $0x2a2a82a8,%eax
+
+221                      (TF1,v1),(TF6,v2),(TF7,v3),(TFC,v4),(TFD,2),
+222                      (TF2,2),(TF5,2),(TF8,2),(TFB,2),(TFE,2),
+223                      (TF3,2),(TF4,2),(TF9,2),(TFA,2),(TFF,2) ) ;
+224
+225     }
+   0x0000000000401e9a <+88>:    pop    %rbp
+   0x0000000000401e9b <+89>:    retq
+
+End of assembler dump.
+
+*/
+uint32_t start_val = 0xffffffff;
+uint32_t mutate_with_vars(int v1, int v2, uint32_t v3, uint8_t v4)
+{
+
+    return Mutate_Fields(start_val, 
+                 (TF1,v1),(TF6,v2),(TF7,v3),(TFC,v4),(TFD,2),
+                 (TF2,2),(TF5,2),(TF8,2),(TFB,2),(TFE,2),
+                 (TF3,2),(TF4,2),(TF9,2),(TFA,2),(TFF,2) ) ;
+    
+}
+
+
+void test_mutate_fields_with_variables(void)
+{
+
+    TEST_ASSERT_EQUAL_HEX(0xEA2ABAA9, mutate_with_vars(1,2,3,4) );
+
+
+}
+
